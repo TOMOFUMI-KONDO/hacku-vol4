@@ -44,7 +44,7 @@ workflows:
           filters:
             branches:
               only: main
-  build_and_deploy-shedule:
+  build-shedule:
     jobs:
       - aws-ecr/build-and-push-image:
           account-url: AWS_ECR_ACCOUNT_URL
@@ -55,21 +55,6 @@ workflows:
           tag: "${CIRCLE_SHA1}-schedule"
           path: "./back"
           dockerfile: "Dockerfile_schedule"
-          filters:
-            branches:
-              only: main
-      - aws-ecs/deploy-service-update:
-          cluster-name: "${AWS_RESOURCE_NAME_PREFIX}-cluster"
-          container-image-name-updates: "container=${AWS_RESOURCE_NAME_PREFIX}-schedule-service,tag=${CIRCLE_SHA1}-schedule"
-          family: "${AWS_RESOURCE_NAME_PREFIX}-service"
-          requires:
-            - aws-ecr/build-and-push-image
-          filters:
-            branches:
-              only: main
-      - notify:
-          requires:
-            - aws-ecs/deploy-service-update
           filters:
             branches:
               only: main
